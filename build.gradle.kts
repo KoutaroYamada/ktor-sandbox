@@ -23,8 +23,8 @@ repositories {
 }
 
 flyway {
-    url = "user"
-    user = "jdbc:mysql://localhost:13306/db"
+    url = "jdbc:mysql://localhost:13306/db"
+    user = "user"
     password = "password"
     locations = arrayOf("filesystem:db/migration")
 }
