@@ -47,7 +47,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm:2.2.4")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:2.2.4")
     implementation("io.ktor:ktor-serialization-jackson-jvm:2.2.4")
-    implementation("io.ktor:ktor-server-netty-jvm:2.2.4")
+//    implementation("io.ktor:ktor-server-netty-jvm:2.2.4")
     implementation("io.ktor:ktor-server-status-pages:2.2.4")
     implementation("io.ktor:ktor-server-host-common-jvm:2.2.4")
     implementation("io.ktor:ktor-server-status-pages-jvm:2.2.4")
