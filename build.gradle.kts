@@ -39,6 +39,11 @@ flyway {
 
 
 dependencies {
+    testImplementation("io.ktor:ktor-server-tests-jvm:2.2.4")
+    testImplementation("io.ktor:ktor-client-content-negotiation:2.2.4")
+    testImplementation("io.kotest:kotest-runner-junit5:5.5.5")
+    testImplementation("io.kotest.extensions:kotest-assertions-ktor:1.0.3")
+    testImplementation("io.mockk:mockk:1.13.4")
     implementation("io.ktor:ktor-server-core-jvm:2.2.4")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:2.2.4")
     implementation("io.ktor:ktor-serialization-jackson-jvm:2.2.4")
@@ -61,9 +66,4 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2.0.6")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    testImplementation("io.ktor:ktor-server-tests-jvm:2.2.4")
-    testImplementation("io.ktor:ktor-client-content-negotiation:2.2.4")
-    testImplementation("io.kotest:kotest-runner-junit5:5.5.5")
-    testImplementation("io.kotest.extensions:kotest-assertions-ktor:1.0.3")
-    testImplementation("io.mockk:mockk:1.13.4")
 }
