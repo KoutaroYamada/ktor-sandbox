@@ -22,12 +22,21 @@ repositories {
     mavenCentral()
 }
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.flywaydb:flyway-mysql:9.15.1")
+    }
+}
 flyway {
     url = "jdbc:mysql://localhost:3306/db"
     user = "user"
     password = "password"
     locations = arrayOf("filesystem:db/migration")
 }
+
 
 dependencies {
     implementation("io.ktor:ktor-server-core-jvm:2.2.4")
