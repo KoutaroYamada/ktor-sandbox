@@ -1,0 +1,79 @@
+name: Build and Test
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+env:
+  CORRETTO_VERSION: 17.0.6.10.1
+  JDK_FILE_PATH: /tmp/downloads/Corretto.tar.gz
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Cache JDK
+        id: cache-jdk
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.JDK_FILE_PATH }}
+          key: cache-jdk-amazon-corretto-${{ env.CORRETTO_VERSION }}
+
+      - name: Download JDK
+        if: steps.cache-jdk.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p $(dirname ${{ env.JDK_FILE_PATH }})
+          curl -k -L -C - \
+              -o ${{ env.JDK_FILE_PATH }} \
+              https://corretto.aws/downloads/resources/${{ env.CORRETTO_VERSION }}/amazon-corretto-${{ env.CORRETTO_VERSION }}-linux-x64.tar.gz
+          echo 50c8e341384a04b95cd1c8b698116dab ${{ env.JDK_FILE_PATH }} | md5sum -c -
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'jdkfile'
+          java-version: '17'
+          architecture: x64
+          jdkFile: ${{ env.JDK_FILE_PATH }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: cache-gradle-${{ hashFiles('**/build.gradle.kts') }}
+          restore-keys: |
+            cache-gradle-
+
+      - name: Create MySQL Container
+        run: |
+          docker run \
+              -e MYSQL_ROOT_PASSWORD=password \
+              -e MYSQL_USER=user \
+              -e MYSQL_PASSWORD=password \
+              -e MYSQL_DATABASE=db \
+              -e TZ=Asia/Tokyo \
+              --name test \
+              -v ~/mysql:/var/lib/mysql \
+              -p 127.0.0.1:3306:3306 \
+              --platform=linux/x86_64 \
+              -d mysql:8.0.32 \
+
+      - name: Db Migrate
+        run: |
+          echo -n "Waiting for mysql ready: "
+          while ! docker exec test mysqladmin -uroot -ppassword --host "127.0.0.1" ping --silent &> /dev/null; do
+            printf "." && sleep 1
+          done
+          echo ok
+
+          ./gradlew flywayMigrate
+
+      - name: build and test
+        run: |
+          ./gradlew build
